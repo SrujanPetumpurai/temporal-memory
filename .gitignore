@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+.DS_Store
+# take-home material (confirm with Diptopal)
+data/
+evals/
+eval_harness/
+examples/
+BRIEF.md
