@@ -19,7 +19,7 @@ SECRET_PATTERNS = [
     re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 ]
 INJECTION_PATTERNS = [
-    re.compile(r"<!--.*?-->", re.S), 
+    re.compile(r"<!--.*?-->", re.S),  # hidden HTML comments
     re.compile(r"(?i)(ignore (all |your )?(previous|prior) instructions[^.\n]*[.\n]?)"),
     re.compile(r"(?i)(note to (any )?ai assistant[^.\n]*[.\n]?)"),
 ]
@@ -239,11 +239,13 @@ def load_slack(store: Store, root: Path, paths: list[Path]) -> None:
             if not target.versions:
                 target.versions.append((target.delivered, target.text))
             target.versions.append((ts, new))
+            target.meta.setdefault("edit_ids", []).append((ts, ev["id"]))
             target.text = new
             target.flags.update(flags)
         else:
             target.deleted_at = ts
             target.flags["deleted"] = True
+            target.meta["delete_id"] = ev["id"]
     # never keep a deleted message's text around for downstream use
     for r in store.records.values():
         if r.deleted_at:
