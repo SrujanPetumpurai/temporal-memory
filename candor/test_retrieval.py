@@ -1,14 +1,10 @@
+import json
 from candor.load import load_all, parse_ts
 from candor.retrieve import Index
-
-store = load_all("data")
-index = Index(store)
-
-question = "Why did the launch slip from September 30?"
-as_of = parse_ts("2026-09-18T18:00:00-07:00")
-result = index.search(question, as_of, k=20)
-
-for rank, hit in enumerate(result.hits, 1):
-    print(f"\n#{rank}  score={hit.score:.3f}  id={hit.id}")
-    print(f"source: {hit.record.source}")
-    print(hit.text)
+ix = Index(load_all("data"))
+for q in map(json.loads, open("evals/memory_train.jsonl")):
+    if q["id"] in ("MEM-TR-20", "MEM-TR-21"):
+        r = ix.search(q["question"], parse_ts(q["as_of"]))
+        print(q["id"], "needed:", q["needed"])
+        for h in r.hits[:12]:
+            print(f"  {h.score:6.2f} {h.id}  {h.text[:70]!r}")
