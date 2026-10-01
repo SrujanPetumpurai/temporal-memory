@@ -69,6 +69,7 @@ def tokenize(s: str, keep_stop: bool = False) -> list[str]:
 # --------------------------------------------------------------------------- #
 
 _SYN_GROUPS = [
+    "sign close contract agreement", 
     "launch live golive ship release rollout",
     "move push delay slip reschedule postpone",
     "price pricing proposal quote cost",
@@ -280,13 +281,13 @@ class Index:
             w[t] = 1.0
         # 'why' is a stop word, so expand from the raw question too
         raw = {stem(t) for t in re.findall(r"[a-z]+", q.lower())}
-        for t in set(toks) | (raw & {"why", "because"}):
+        for t in sorted(set(toks) | (raw & {"why", "because"})):   # was: set(toks) | (...)
             for e in EXPAND.get(t, []):
                 w.setdefault(e, 0.35)
-        for t in set(toks):
+        for t in sorted(set(toks)):                                 # was: set(toks)
             for e in DIRECTED.get(t, []):
                 w.setdefault(e, 0.35)
-        if raw & {"why", "reason"}:
+        if raw & {"why", "reason"}: 
             for e in WHY_TERMS:
                 w.setdefault(e, 0.35)
         for d in relative_dates(q, as_of):
@@ -410,7 +411,7 @@ class Index:
             return res
 
         terms = self._coverage_terms(question)
-        ranked = sorted(scores, key=lambda i: -scores[i])
+        ranked = sorted(scores, key=lambda i: (-scores[i], i))
         res.coverage = self._best_coverage(terms, ranked, idx)
         if len(terms) >= self.COVER_MIN_TERMS and res.coverage < self.COVER_MIN:
             res.abstain = True
@@ -490,7 +491,7 @@ class Index:
             res.abstain, res.reason = True, "no visible record matches"
             return res
 
-        cands.sort(key=lambda h: -h.score)
+        cands.sort(key=lambda h: (-h.score, h.id))                  # was: key=lambda h: -h.score
         if min_score and cands[0].score < min_score:
             res.abstain, res.reason = True, f"top score {cands[0].score:.1f} < {min_score}"
             return res

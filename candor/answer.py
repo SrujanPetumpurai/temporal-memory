@@ -1,9 +1,3 @@
-"""Answer writer. Retrieval is the main score; this stage must stay grounded.
-
-* With ANTHROPIC_API_KEY set: an LLM writes the answer from the retrieved records only.
-* Without a key (or on API failure): a short deterministic extractive answer.
-Every answer is sanitised again (secrets / planted instructions) before it is returned.
-"""
 from __future__ import annotations
 
 import json
@@ -35,6 +29,11 @@ Rules:
   speaker is unidentified or low confidence, say the speaker is unknown.
 - DISAGREEMENT is not change: when two people disagree at the same time, present both views
   and do not pick a winner.
+- A later message from a DIFFERENT person is not a correction of an earlier one unless it
+  says so. When people hold different views on the same question, report each view with
+  who said it and when. Do not pick a winner or call either view the consensus.
+- Use only dates, weekdays and numbers that appear in the records. Never work out a
+  weekday yourself. An all-day calendar event's end date is exclusive.
 - PROMISES: track whether a commitment was made, moved, fulfilled or cancelled.
 - STATUS QUESTIONS (signed? sent? done?): if the records only show earlier stages, say it has
   NOT happened yet and give the latest stage and any expected date.
@@ -87,7 +86,7 @@ def _snippet(text: str, question: str, limit: int) -> str:
 
 
 def _fmt(r, text: str, question: str, ctx: bool = False) -> str:
-    when = (r.when or r.delivered).strftime("%Y-%m-%d %H:%M")
+    when = (r.when or r.delivered).strftime("%a %Y-%m-%d %H:%M")
     who = r.author or "unknown"
     if r.author_confidence is not None:
         who += f" (speaker conf {r.author_confidence:.2f})"
@@ -126,6 +125,7 @@ def _parse_json(text: str) -> dict | None:
 
 def _call_llm(user: str) -> dict | None:
     key = os.environ.get("API_KEY")
+    base = os.environ.get("API_BASE", "https://api.aicredits.in/v1").rstrip("/")
     if not key:
         return None
 
@@ -141,7 +141,7 @@ def _call_llm(user: str) -> dict | None:
 
     for attempt in range(3):
         req = urllib.request.Request(
-            "https://api.aicredits.in/v1/chat/completions",
+            f"{base}/chat/completions",
             data=body,
             headers={
                 "Authorization": f"Bearer {key}",
