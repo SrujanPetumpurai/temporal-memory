@@ -2,7 +2,7 @@
 
 A time-aware memory over two weeks of Alex Rivera's work life (meetings, dictation, Slack, Gmail, Calendar, Codex, ChatGPT), plus a dry-run action planner (TextOS: text only, no voice input).
 
-**Submitted commit:** `<COMMIT_HASH>`
+**Submitted commit:** `7bd454b`
 
 ## Results at a glance (train sets)
 
