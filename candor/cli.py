@@ -53,9 +53,26 @@ def main() -> None:
     memory.add_argument("--data", default="data")
     memory.add_argument("--no-llm", action="store_true")
 
+    act = sub.add_parser("actions", help="turn a JSONL file of commands into dry-run actions")
+    act.add_argument("--commands", required=True)
+    act.add_argument("--out", required=True)
+    act.add_argument("--data", default="data")
+    act.add_argument("--no-llm", action="store_true")
+
+    rp = sub.add_parser("repl", help="interactive text assistant (dry run)")
+    rp.add_argument("--data", default="data")
+    rp.add_argument("--as-of", help="ISO time to pretend it is (default: now)")
+    rp.add_argument("--no-llm", action="store_true")
+
     args = parser.parse_args()
     if args.cmd == "memory":
         run(args.questions, args.out, args.data, use_llm=not args.no_llm)
+    elif args.cmd == "actions":
+        from .actions import run as run_actions
+        run_actions(args.commands, args.out, args.data, use_llm=not args.no_llm)
+    elif args.cmd == "repl":
+        from .actions import repl
+        repl(args.data, args.as_of, use_llm=not args.no_llm)
 
 
 if __name__ == "__main__":

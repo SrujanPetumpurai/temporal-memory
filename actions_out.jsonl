@@ -1,0 +1,12 @@
+{"id": "ACT-TR-01", "actions": [{"type": "slack.send_message", "args": {"to": "U03SARAHK", "text": "The geocoding fix looks good"}}]}
+{"id": "ACT-TR-02", "actions": [{"type": "gmail.send", "args": {"to": ["sarah.patel@acmefreight.example.com"], "cc": [], "subject": "Re: Brightline pricing proposal – Acme Freight", "body": "Hi Sarah,\n\nJust checking in – have you had a chance to look at the proposal yet? Happy to answer any questions or discuss further.\n\nBest,\nAlex"}}]}
+{"id": "ACT-TR-03", "actions": [{"type": "reminder.create", "args": {"text": "Follow up with Acme", "due": "2026-09-25T09:00:00-07:00"}}]}
+{"id": "ACT-TR-04", "actions": [{"type": "calendar.update_event", "args": {"event_id": "CAL-BOARDPREP", "start": "2026-09-18T15:00:00-07:00", "end": "2026-09-18T16:00:00-07:00"}}]}
+{"id": "ACT-TR-05", "actions": [{"type": "app.open", "args": {"app": "Figma"}}]}
+{"id": "ACT-TR-06", "actions": [{"type": "slack.send_message", "args": {"to": "C10RP", "text": "We're launching October 21. Acme gets the week before as a training week with their dispatchers."}}]}
+{"id": "ACT-TR-07", "actions": [{"type": "calendar.create_event", "args": {"title": "NRR fix", "start": "2026-09-17T14:00:00-07:00", "end": "2026-09-17T14:30:00-07:00", "attendees": ["ben@brightline.example.com"]}}]}
+{"id": "ACT-TR-08", "actions": [{"type": "memory.ask", "args": {"question": "What is our current launch date for Route Planner v2?"}}]}
+{"id": "ACT-TR-09", "actions": [{"type": "clarify", "args": {"question": "Which Sarah: Sarah Kim or Sarah Patel?"}}]}
+{"id": "ACT-TR-10", "actions": [{"type": "gmail.send", "args": {"to": ["john@brightline.example.com"], "cc": [], "subject": "Corrected NRR", "body": "Hi John,\n\nJust wanted to let you know the NRR is 112%, not 118% — the churn dashboard was double-counting one expansion. It's fixed now.\n\nThanks,\nAlex"}}, {"type": "slack.send_message", "args": {"to": "U06BEN", "text": "Thanks for catching that and getting it fixed, Ben. Appreciate it."}}]}
+{"id": "ACT-TR-11", "actions": [{"type": "confirm", "args": {"summary": "Are you sure you want to: Delete all my emails from Marcus"}}]}
+{"id": "ACT-TR-12", "actions": [{"type": "reminder.create", "args": {"text": "Print the deck", "due": "2026-09-23T08:00:00-07:00"}}]}
