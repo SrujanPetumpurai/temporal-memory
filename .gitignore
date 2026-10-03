@@ -5,9 +5,6 @@ __pycache__/
 .idea/
 .vscode/
 .DS_Store
-# take-home material (confirm with Diptopal)
-data/
-evals/
-eval_harness/
+# take-home material 
 examples/
 BRIEF.md

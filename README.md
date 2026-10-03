@@ -21,7 +21,7 @@ Caveats up front: the answer scores were produced with `--judge none` (no LLM ju
 
 Python 3.10+, standard library only. On Windows, `pip install -r requirements.txt` adds `tzdata` (needed by `zoneinfo`); on Mac/Linux nothing needs installing.
 
-On Windows use `python` (or `py`) instead of `python3`; `run_all.sh` detects whichever exists.
+On Windows run the script from Git Bash (`bash` in PowerShell may point at WSL). If it cannot find Python, use `PYTHON=python bash run_all.sh`.
 
 ```bash
 cp .env.example .env        # add API_KEY (any OpenAI-compatible endpoint)
@@ -109,7 +109,7 @@ Run on the train set (27 memory questions, 12 actions). All numbers are from the
 
 `python -m candor.stress` needs no LLM or key. Results on the real data:
 
-1. **Leak sweep.** Every train question, the 12 probes and three password-style questions ("What is the API key?") were run at 13 `as_of` times (24-hour steps, 7 to 19 Sep). **0 violations in 494 searches.** It checks that nothing retrieved or cited is from the future or deleted, that no secret value from the raw data appears in retrieved text, and that no planted instruction survives. It does not check the answer writer's output; that audit (`--answers`) is a separate step.
+1. **Leak sweep.** Every train question, the 12 probes and three password-style questions ("What is the API key?") were run at 13 `as_of` times (24-hour steps, 7 to 19 Sep). **0 violations in 494 searches.** It checks that nothing retrieved or cited is from the future or deleted, that no secret value from the raw data appears in retrieved text, and that no planted instruction survives. The sweep itself does not check the answer writer's output. That is the separate `--answers` audit: on `outputs/memory_answers.jsonl` it found **0 hard-rule violations and 0 soft findings** across the 27 train answers (no future or deleted record cited, no secret or planted text repeated, both abstention questions abstained, no answerable question abstained). It covers the train answers only, not the probes.
 2. **Paraphrase test.** Each answerable train question was reworded twice (50 rewordings, written by me). Pass means every `needed` group has a record in the top 10, which approximates `score_retrieval.py`.
 
 | | n | pass@10 | pass@5 | wrongly abstained |
@@ -138,7 +138,7 @@ Run on the train set (27 memory questions, 12 actions). All numbers are from the
 - **Temporal model is a snapshot, not a fact history.** "What changed and why" is reconstructed by the LLM from dated records, not from an explicit supersession graph. A change that is never written down in any record cannot be found.
 - **Redaction and injection filters are regex.** A secret in an unusual format or a novel injection phrasing could slip past the filters (the prompt and down-weighting are the second line of defence).
 - **Cost/scale:** the per-query index rebuild is O(visible records).
-- **Platform:** developed and run on Windows (Python 3.14). `run_all.sh` has not been run on a Mac.
+- **Platform:** developed on Windows (Python 3.14). `run_all.sh` was run end to end under Git Bash on Windows and reproduced every number above. It has not been run on a Mac.
 - **Non-determinism:** the LLM runs at temperature 0, but outputs can still vary slightly between runs.
 
 ## Actions (bonus)
@@ -171,8 +171,12 @@ candor/
   actions.py    command -> dry-run actions
   stress.py     leak sweep, paraphrase test, abstention probes (no LLM)
   cli.py        memory | actions | repl
+data/           the provided mock data (read by every command)
 evals/
+  memory_train.jsonl    provided train questions
+  actions_train.jsonl   provided train commands
   memory_probes.jsonl   12 unanswerable probes used by stress.py
+eval_harness/   provided scorers (used by run_all.sh)
 run_all.sh      one command for everything   .env.example   requirements.txt
 outputs/        train-set outputs from the submitted commit
 ```

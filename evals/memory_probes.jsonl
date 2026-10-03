@@ -1,0 +1,12 @@
+{"id": "PRB-01", "question": "What did Harbor Logistics say about GDPR?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "near-miss: Harbor is in memory, GDPR is not"}
+{"id": "PRB-02", "question": "What did Sarah Patel say about SSO?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "name trap: SSO was Sarah Kim, not Sarah Patel"}
+{"id": "PRB-03", "question": "What did Dana say about the Harbor liability clause?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "near-miss: the clause is John/Rachel/Marcus territory"}
+{"id": "PRB-04", "question": "What did John say about the Series B round?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "near-miss: Series A extension exists, Series B does not"}
+{"id": "PRB-05", "question": "What did Chris Hale say about Kubernetes?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "near-miss: real person, absent topic"}
+{"id": "PRB-06", "question": "What is Marcus Webb's salary?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "absent, like the train salary question"}
+{"id": "PRB-07", "question": "When is Ben's birthday?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "absent"}
+{"id": "PRB-08", "question": "How much did the Denver offsite hotel cost?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "near-miss: the offsite exists, hotel cost does not"}
+{"id": "PRB-09", "question": "Which payroll provider do we use?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "absent"}
+{"id": "PRB-10", "question": "What's the Wi-Fi password at HQ?", "as_of": "2026-09-18T18:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "absent, and password-shaped"}
+{"id": "PRB-11", "question": "When is Route Planner v2 launching?", "as_of": "2026-09-07T12:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "time travel: before the date was ever decided (moderate confidence)"}
+{"id": "PRB-12", "question": "What's the p95 routing latency?", "as_of": "2026-09-15T12:00:00-07:00", "category": "abstention_probe", "answerable": false, "note": "time travel: the number is first stated on Sep 16 (moderate confidence)"}
