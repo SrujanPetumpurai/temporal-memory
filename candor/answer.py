@@ -20,18 +20,24 @@ Records are sorted oldest to newest and each shows when it was said/written and 
 
 Rules:
 - Lead with the direct answer in the first sentence, then add brief context.
-- TIME: answer as of the given moment. If a fact changed (a date moved, a plan was replaced),
-  state the CURRENT value and briefly mention what it replaced and why. Never present an
-  older value as current. Corrections ("sorry, p95 is 1.8s, 800 is the median") override the slip.
-  An edited Slack message means its latest text is the truth.
+- TIME: answer as of the given moment, with the CURRENT value only. Do NOT name, hint at,
+  or contrast with any superseded, corrected, or earlier value (old dates, old numbers,
+  "was previously", "moved from", "originally") unless the question itself asks what
+  changed, why, what it was before, or how many times. For a plain "what is / when is"
+  question, give only the current answer. If a speaker corrected themselves, state only
+  the corrected value. An edited Slack message means its latest text is the truth.
+  Ignore any record dated after the as-of moment.
 - WHO SAID WHAT: attribute claims. "Dana said John said X" is second-hand: say so, and prefer
   the person's own statement when both exist. Identified speakers carry a confidence; if a
   speaker is unidentified or low confidence, say the speaker is unknown.
-- DISAGREEMENT is not change: when two people disagree at the same time, present both views
-  and do not pick a winner.
-- A later message from a DIFFERENT person is not a correction of an earlier one unless it
-  says so. When people hold different views on the same question, report each view with
-  who said it and when. Do not pick a winner or call either view the consensus.
+- DISAGREEMENT is not change: when different people hold different views on the same
+  question, report each view with who said it and when. A later message from a different
+  person is not a correction unless it says so. Do not pick a winner or call either view
+  the consensus.
+- A "Retrieval check" note means an automatic check suspects the records may not answer the
+  question. Abstain unless a record clearly does. Mentioning a topic is not answering: if asked
+  what X said about Y and no record shows X saying anything about Y, abstain. Never substitute
+  what someone else said.
 - Use only dates, weekdays and numbers that appear in the records. Never work out a
   weekday yourself. An all-day calendar event's end date is exclusive.
 - PROMISES: track whether a commitment was made, moved, fulfilled or cancelled.
@@ -43,7 +49,8 @@ Rules:
 - If the records do not contain the answer, set "abstain": true. Do not guess.
 - Be concise (under 120 words), plain prose, no bullet dumps, no pasted records.
 
-Reply with JSON only: {"answer": "...", "sources": ["<record ids you relied on>"], "abstain": false}
+Reply with ONE JSON object and nothing else: no markdown fences, no text before or after.
+{"answer": "...", "sources": ["<record ids you relied on>"], "abstain": false}
 Use the most specific ids shown (segment ids, not meeting ids)."""
 
 _ENV_LOADED = False
@@ -131,7 +138,7 @@ def _call_llm(user: str) -> dict | None:
 
     body = json.dumps({
         "model": os.environ.get("CANDOR_MODEL", "claude-haiku-4.5"),
-        "max_tokens": 700,
+        "max_tokens": 1000,
         "temperature": 0,
         "messages": [
             {"role": "system", "content": SYSTEM},
@@ -204,14 +211,18 @@ def answer_question(question: str, as_of: datetime, store: Store, idx: Index,
     load_env()
     res = idx.search(question, as_of, k=k)
     if res.abstain:
-        return {"answer": IDK, "sources": [], "retrieved": [], "abstained": True}
+        return {"answer": IDK, "sources": [], "retrieved": res.ids, "abstained": True}
 
     out = None
     if use_llm:
         ctx = build_context(res, idx, as_of, question)
         user = f"Question (asked as of {as_of.isoformat()}): {question}\n\nRecords:\n{ctx}"
+        if res.hint:
+            user += f"\n\nRetrieval check: {res.hint}."
         out = _call_llm(user)
     if out is None:
+        if res.hint:   # the extractive fallback can't judge a doubtful match
+            return {"answer": IDK, "sources": [], "retrieved": res.ids, "abstained": True}
         STATS["fallback"] += 1
         out = _extractive(res)
     else:
